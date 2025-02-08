@@ -1,6 +1,9 @@
 from flask import Flask, request, render_template, jsonify
 import requests
 import os
+from dotenv import load_dotenv
+
+load_dotenv(dotenv_path='key.env')
 
 # Initialize Flask app
 app = Flask(__name__)
