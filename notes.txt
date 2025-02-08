@@ -1,0 +1,1 @@
+OPENAIKEY = "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"
