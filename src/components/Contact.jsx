@@ -42,8 +42,8 @@ const ContactUs = () => {
               <p className="font-bold text-lg">Project Team</p>
               <ul className="text-gray-300 list-disc list-inside mt-2 space-y-1">
                 <li>Sophy Joasil (Computer Science, Class of 2026)</li>
-                <li>Nathaniel Boateng (Computer Science Class of 2027)</li>
-                <li>Aliyah Zaizay (Computer Science Class of 2027)</li>
+                <li>Nathaniel Boateng (Computer Science, Class of 2027)</li>
+                <li>Aliyah Zaizay (Computer Science, Class of 2027)</li>
               </ul>
             </div>
 
