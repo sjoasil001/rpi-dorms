@@ -57,12 +57,7 @@ const ContactUs = () => {
             </div>
           </div>
 
-          {/* Social Icons (Optional) */}
-          <div className="flex space-x-6 mt-10 text-2xl text-black">
-            <i className="fab fa-facebook-f cursor-pointer hover:text-[#c1ffd7]" />
-            <i className="fab fa-instagram cursor-pointer hover:text-[#c1ffd7]" />
-            <i className="fab fa-linkedin-in cursor-pointer hover:text-[#c1ffd7]" />
-          </div>
+          
         </div>
 
         {/* Right Side Form */}
