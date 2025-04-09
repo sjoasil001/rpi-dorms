@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from 'react';
 import dormLogo from '../assets/dormlogo.svg';
 import '@fontsource/inter';
@@ -45,10 +46,34 @@ const Navbar = () => {
         <label className="bg-black text-white px-5 py-2 rounded-full font-semibold text-lg tracking-wider hover:opacity-90 cursor-pointer">
           Upload
           <input type="file" className="hidden" />
+=======
+import React from "react";
+import { Link } from "react-router-dom";
+import logo from "../assets/DORMS.svg"; // Import the logo image
+import "../styles/Navbar.css";
+
+function Navbar() {
+  return (
+    <nav className="navbar">
+      {/* Logo Section */}
+      <div className="navbar-logo">
+        <img src={logo} alt="RPI Dorms Logo" />
+      </div>
+
+      {/* Upload Button */}
+      <div className="navbar-upload">
+        <input type="file" id="fileUpload" className="hidden" />
+        <label htmlFor="fileUpload" className="upload-button">
+          Upload
+>>>>>>> 2872e9d8e65cbc70a56316fb22d2af6305b7eafb
         </label>
       </div>
     </nav>
   );
+<<<<<<< HEAD
 };
+=======
+}
+>>>>>>> 2872e9d8e65cbc70a56316fb22d2af6305b7eafb
 
 export default Navbar;
