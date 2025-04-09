@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot</title>
+</head>
+<body>
+  <h1>Chatbox</h1>
+  <div id="chat-box">
+    <!-- Messages will be displayed here -->
+  </div>
+  <input type="text" id="user-input" placeholder="Type your message..." />
+  <button id="send-btn">Send</button>
+
+  <script>
+    // Event listener for the send button
+    document.getElementById('send-btn').addEventListener('click', function() {
+      const userMessage = document.getElementById('user-input').value;
+
+      if (userMessage.trim() === "") return;
+
+      // Send POST request to the Flask server with user input as JSON
+      fetch('/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ message: userMessage })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Display bot's response
+        const chatBox = document.getElementById('chat-box');
+        chatBox.innerHTML += `<p><strong>You:</strong> ${userMessage}</p>`;
+        chatBox.innerHTML += `<p><strong>Bot:</strong> ${data.response}</p>`;
+        document.getElementById('user-input').value = ''; // Clear input field
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+    });
+  </script>
+</body>
+</html>
+
