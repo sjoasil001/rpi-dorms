@@ -42,10 +42,12 @@ const Navbar = () => {
         </div>
 
         {/* Upload File Button */}
-        <label className="bg-black text-white px-5 py-2 rounded-full font-semibold text-lg tracking-wider hover:opacity-90 cursor-pointer">
-          Upload
-          <input type="file" className="hidden" />
-        </label>
+
+
+        <Link to="/upload" className="bg-black text-white px-5 py-2 rounded-full font-semibold text-lg tracking-wider hover:opacity-90 transition">
+  Upload
+</Link>
+
       </div>
     </nav>
   );

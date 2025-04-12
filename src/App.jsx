@@ -1,4 +1,3 @@
-// App.jsx
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -7,6 +6,7 @@ import Carousel from './components/Carousel';
 import Contact from './components/Contact';
 import Insights from './components/Insights';
 import Dorms from './components/Dorms';
+import UploadPage from './components/UploadPage'; 
 
 function Home() {
   return (
@@ -25,7 +25,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/insights" element={<Insights />} />
-        <Route path="/dorms" element={<Dorms />} /> {}
+        <Route path="/dorms" element={<Dorms />} />
+        <Route path="/upload" element={<UploadPage />} />
       </Routes>
     </>
   );
