@@ -1,0 +1,31 @@
+[
+
+{
+    "dorm" : "Barton Hall",
+    "area" : "Freshman Hill",
+    "bathroom" : ["In-room","On-floor", "shared"],
+    "room" : ["singles", "doubles", "triples"],
+    "floors": "4",
+    "co-ed" : "yes (rooms are single gender)",
+    "furniture" : ["wardrobe", "twin-mattress", "Desk", "Chair", "Bookcase (Above Desk)", "Dresser"],
+    "amenities" : ["Air conditioning", "ac", "air cond", "lounge", "carpet", "elevator", "half-kitchen", "printer", "study rooms"],
+    "diningHall" : "Commons Dining Hall"
+
+},
+
+{
+    "dorm" : "Bray Hall",
+    "area" : "Freshman Hill",
+    "bathroom" : ["communal","On-floor"],
+    "room" : ["singles", "doubles", "triples"],
+    "floors": "3",
+    "co-ed" : "yes (rooms are single gender)",
+    "furniture" : ["Closet", "twin-mattress", "Desk", "Chair", "Bookcase (Above Desk)", "Dresser"],
+    "amenities" :  ["lounge","carpet", "kitchen", "printer", "study rooms", "laundry"],
+    "diningHall" : "Commons Dining Hall"
+
+}
+
+
+
+]
