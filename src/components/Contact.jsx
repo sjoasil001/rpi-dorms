@@ -27,10 +27,9 @@ const ContactUs = () => {
 
   return (
     <>
-      {/* anchor for Back to Top in the footer */}
       <div id="top" />
 
-      <div className="min-h-screen bg-white text-white px-6 md:px-20 font-sans">
+      <div className="min-h-screen bg-white text-white px-6 md:px-20 font-sans pt-24 md:pt-32">
         <div className="grid md:grid-cols-2 gap-16 max-w-7xl mx-auto py-24">
           {/* Left Side */}
           <div>
