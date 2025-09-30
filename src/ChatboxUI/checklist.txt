@@ -1,0 +1,19 @@
+
+
+
+
+Objective:  Chatbox tailored specifically to RPI-based dorm questions
+
+
+IA:
+
+ChatboxUI/
+    Checklist.txt
+    Chatbox.jsx
+    api.js
+    index.js
+    compenents/
+        messageBubble.jsx : displas a sinfle chat message bubble
+        DormCard.jsx :card UI for each dorm resulted by backend
+        statuspill.jsx : status indicator in chat head "ready", "thinking" when waiting for backend. 
+        typingBubble.jsx : Animated "assistant is typing..." bubble that appears while waiting for an answer.
