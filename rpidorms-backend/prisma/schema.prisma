@@ -48,3 +48,16 @@ model SubmissionAmenity {
 
   @@id([submissionId, amenityId]) // composite PK
 }
+
+model EmailVerification {
+  email     String   @id
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model VerifiedEmail {
+  email      String   @id
+  verifiedAt DateTime @default(now())
+}
