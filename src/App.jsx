@@ -7,12 +7,14 @@ import Contact from './components/Contact';
 import Insights from './components/Insights';
 import Dorms from './components/Dorms';
 import UploadPage from './components/UploadPage'; 
+import Footer from './components/Footer';
 
 function Home() {
   return (
     <>
       <Hero />
       <Carousel />
+      <Footer/>
     </>
   );
 }
