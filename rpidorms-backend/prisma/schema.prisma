@@ -1,0 +1,63 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Dorm {
+  id          String       @id @default(cuid())
+  name        String       @unique
+  slug        String       @unique
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  submissions Submission[]
+}
+
+model Amenity {
+  id          String              @id @default(cuid())
+  name        String              @unique
+  submissions SubmissionAmenity[]
+}
+
+model Submission {
+  id        String              @id @default(cuid())
+  dorm      Dorm                @relation(fields: [dormId], references: [id])
+  dormId    String
+  classYear Int
+  rating    Int // validate 1..5 in code (Prisma has no @@check)
+  review    String?             @db.Text
+  photoUrl  String
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  amenities SubmissionAmenity[]
+
+  @@index([dormId])
+  @@index([rating])
+  @@index([classYear])
+  @@index([updatedAt])
+}
+
+model SubmissionAmenity {
+  submission   Submission @relation(fields: [submissionId], references: [id])
+  submissionId String
+  amenity      Amenity    @relation(fields: [amenityId], references: [id])
+  amenityId    String
+
+  @@id([submissionId, amenityId]) // composite PK
+}
+
+model EmailVerification {
+  email     String   @id
+  codeHash  String
+  expiresAt DateTime
+  attempts  Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model VerifiedEmail {
+  email      String   @id
+  verifiedAt DateTime @default(now())
+}

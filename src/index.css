@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+@layer utilities {
+  .animate-glow {
+    background-size: 200% 200%;
+    animation: glow 4s linear infinite;
+  }
+}
+
 .transform-style-preserve-3d {
   transform-style: preserve-3d;
 }
