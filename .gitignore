@@ -65,3 +65,5 @@ rpidorms-backend/.env*
 node_modules/
 .env
 .env.*
+
+/src/generated/prisma

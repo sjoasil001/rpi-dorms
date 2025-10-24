@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16
+    container_name: rpidorms-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: rpidorms_user
+      POSTGRES_PASSWORD: rpidorms_pass
+      POSTGRES_DB: rpidorms
+    ports:
+      - "5433:5432"              
+    volumes:
+      - rpidorms-pgdata:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer:4
+    container_name: rpidorms-adminer
+    restart: unless-stopped
+    ports:
+      - "8080:8080"                
+
+volumes:
+  rpidorms-pgdata:

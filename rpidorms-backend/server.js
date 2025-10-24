@@ -4,6 +4,7 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import { prisma } from "./db.js";
 
 dotenv.config();
 
@@ -15,14 +16,14 @@ app.use(express.json());
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",       // Vite dev
-      "https://your-production-domain.com" // <- replace with your real domain
+      "http://localhost:5173",              // vite dev
+      "https://your-production-domain.com", // replace when deployed
     ],
-    methods: ["POST", "OPTIONS"],
+    methods: ["GET", "POST", "OPTIONS"],
   })
 );
 
-// --- basic rate limit: 10 requests / 10 minutes per IP
+// --- basic rate limit: 10 requests / 10 minutes per IP (only for contact)
 app.use(
   "/api/contact",
   rateLimit({ windowMs: 10 * 60 * 1000, max: 10, standardHeaders: true })
@@ -39,7 +40,7 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// --- health check (optional)
+// --- health check
 app.get("/api/health", (_req, res) => res.json({ ok: true }));
 
 // --- contact endpoint
@@ -62,29 +63,21 @@ app.post("/api/contact", async (req, res) => {
       return res.status(400).json({ ok: false, error: "Invalid input." });
     }
 
-    // sanitize-ish (quick trim)
     const name = from_name.trim().slice(0, 200);
     const email = reply_to.trim().slice(0, 200);
     const body = message.trim().slice(0, 5000);
 
-    // compose
-    const mailOptions = {
-      from: `"RPI Dorms Contact" <${process.env.MAIL_USERNAME}>`, // must be your Gmail
-      to: process.env.MAIL_TO, // where you receive
+    await transporter.sendMail({
+      from: `"RPI Dorms Contact" <${process.env.MAIL_USERNAME}>`,
+      to: process.env.MAIL_TO,
       subject: `New contact form message from ${name}`,
-      text:
-`From: ${name} <${email}>
-
-${body}
-`,
+      text: `From: ${name} <${email}>\n\n${body}\n`,
       html: `
         <p><strong>From:</strong> ${escapeHtml(name)} &lt;${escapeHtml(email)}&gt;</p>
         <p>${escapeHtml(body).replace(/\n/g, "<br/>")}</p>
       `,
-      replyTo: email, // lets you reply directly to the sender
-    };
-
-    await transporter.sendMail(mailOptions);
+      replyTo: email,
+    });
 
     return res.status(200).json({ ok: true, message: "Sent" });
   } catch (err) {
@@ -101,11 +94,6 @@ function escapeHtml(s = "") {
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
 }
-
-const port = Number(process.env.PORT || 4000);
-app.listen(port, () => console.log(`Mail API listening on :${port}`));
-
-
 
 // --- simple in-memory store for codes (email -> { code, expiresAt })
 const codes = new Map();
@@ -141,16 +129,11 @@ app.post("/auth/send-code", async (req, res) => {
 
     codes.set(rpiEmail, { code, expiresAt, nextSendAllowedAt });
 
-    // send email
     await transporter.sendMail({
       from: `"RPI Dorms Verification" <${process.env.MAIL_USERNAME}>`,
       to: rpiEmail,
       subject: "Your RPI Dorms verification code",
-      text:
-`Your verification code is: ${code}
-
-This code will expire in 10 minutes.
-If you did not request this, you can ignore this email.`,
+      text: `Your verification code is: ${code}\n\nThis code will expire in 10 minutes.\nIf you did not request this, you can ignore this email.`,
     });
 
     return res.json({ ok: true, message: "Code sent." });
@@ -181,7 +164,6 @@ app.post("/auth/verify", (req, res) => {
       return res.status(400).json({ ok: false, error: "Incorrect verification code." });
     }
 
-    // success: one-time use
     codes.delete(rpiEmail);
     return res.json({ ok: true, message: "Verified." });
   } catch (err) {
@@ -189,3 +171,66 @@ app.post("/auth/verify", (req, res) => {
     return res.status(500).json({ ok: false, error: "Verification failed." });
   }
 });
+
+// ==================== SUBMISSIONS API ====================
+
+// Create a submission
+app.post("/submissions", async (req, res) => {
+  try {
+    const { dorm_name, class_year, rating, amenities, review, photo_url } = req.body || {};
+
+    if (!dorm_name || !class_year || !rating || !photo_url) {
+      return res.status(400).json({ error: "missing_fields" });
+    }
+    if (!Array.isArray(amenities) || amenities.length === 0) {
+      return res.status(400).json({ error: "amenities_required" });
+    }
+
+    const r = Number(rating);
+    if (Number.isNaN(r) || r < 1 || r > 5) {
+      return res.status(400).json({ error: "invalid_rating" });
+    }
+
+    const created = await prisma.submission.create({
+      data: {
+        dorm_name,
+        class_year: Number(class_year),
+        rating: r,
+        amenities,
+        review: review || null,
+        photo_url,
+      },
+      select: { id: true, created_at: true },
+    });
+
+    // Cast BigInt -> string for JSON
+    return res.json({
+      ok: true,
+      id: String(created.id),
+      created_at: created.created_at,
+    });
+  } catch (err) {
+    console.error("INSERT ERROR:", err);
+    return res.status(500).json({ error: "insert_failed" });
+  }
+});
+
+// List recent submissions
+app.get("/submissions", async (_req, res) => {
+  try {
+    const rows = await prisma.submission.findMany({
+      orderBy: { created_at: "desc" },
+      take: 20,
+    });
+    const safe = rows.map((r) => ({ ...r, id: String(r.id) })); // BigInt -> string
+    return res.json(safe);
+  } catch (err) {
+    console.error("READ ERROR:", err);
+    return res.status(500).json({ error: "read_failed" });
+  }
+});
+
+// ==================== /SUBMISSIONS ====================
+
+const port = Number(process.env.PORT || 4000);
+app.listen(port, () => console.log(`API listening on :${port}`));

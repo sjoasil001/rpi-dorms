@@ -1,5 +1,6 @@
 import React, { useRef, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 const ChevronDown = () => (
   <svg viewBox="0 0 20 20" aria-hidden="true" className="h-5 w-5">
@@ -10,7 +11,10 @@ const ChevronDown = () => (
 function Select({ label, required, value, onChange, children, placeholder }) {
   return (
     <div className="space-y-1.5">
-      <label className="text-sm font-medium text-zinc-800">{label}{required && <span className="text-red-500"> *</span>}</label>
+      <label className="text-sm font-medium text-zinc-800">
+        {label}
+        {required && <span className="text-red-500"> *</span>}
+      </label>
       <div className="relative">
         <select
           value={value}
@@ -34,17 +38,17 @@ function StarRating({ value, onChange }) {
   const [hover, setHover] = useState(0);
   return (
     <div className="flex items-center gap-1">
-      {[1,2,3,4,5].map(n => (
+      {[1, 2, 3, 4, 5].map((n) => (
         <button
           key={n}
           type="button"
           onMouseEnter={() => setHover(n)}
           onMouseLeave={() => setHover(0)}
           onClick={() => onChange(n)}
-          aria-label={`${n} star${n>1?'s':''}`}
+          aria-label={`${n} star${n > 1 ? "s" : ""}`}
           className="p-1"
         >
-          <svg viewBox="0 0 24 24" className={`h-6 w-6 ${ (hover || value) >= n ? 'fill-amber-400' : 'fill-zinc-200'}`}>
+          <svg viewBox="0 0 24 24" className={`h-6 w-6 ${ (hover || value) >= n ? "fill-amber-400" : "fill-zinc-200"}`}>
             <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
           </svg>
         </button>
@@ -60,7 +64,7 @@ function AmenityPill({ label, checked, onChange }) {
       type="button"
       onClick={onChange}
       className={`rounded-full border px-3 py-1.5 text-sm transition shadow-sm
-                 ${checked ? 'border-[#c8102e] bg-[#c8102e]/10 text-[#a00d24]' : 'border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400'}`}
+                 ${checked ? "border-[#c8102e] bg-[#c8102e]/10 text-[#a00d24]" : "border-zinc-300 bg-white text-zinc-700 hover:border-zinc-400"}`}
       aria-pressed={checked}
     >
       {label}
@@ -85,7 +89,7 @@ function FileUpload({ inputRef, preview, setPreview, required }) {
     e.preventDefault();
     const f = e.dataTransfer.files?.[0];
     if (f) {
-      inputRef.current.files = e.dataTransfer.files;
+      if (inputRef.current) inputRef.current.files = e.dataTransfer.files;
       onFile(f);
     }
   };
@@ -101,9 +105,7 @@ function FileUpload({ inputRef, preview, setPreview, required }) {
         {preview ? (
           <img src={preview} alt="Preview" className="mx-auto h-40 w-auto rounded-lg object-cover" />
         ) : (
-          <div className="text-sm text-zinc-600">
-            Drag & drop a photo here
-          </div>
+          <div className="text-sm text-zinc-600">Drag & drop a photo here</div>
         )}
 
         <div className="mt-3 flex items-center justify-center gap-3">
@@ -133,6 +135,7 @@ function FileUpload({ inputRef, preview, setPreview, required }) {
 const UploadForm = () => {
   const [uploadSuccess, setUploadSuccess] = useState(false);
   const [preview, setPreview] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     dorm_name: "",
     class_year: "",
@@ -146,45 +149,83 @@ const UploadForm = () => {
   const toggleAmenity = (value) => {
     setFormData((prev) => {
       const exists = prev.amenities.includes(value);
-      return { ...prev, amenities: exists ? prev.amenities.filter(a => a !== value) : [...prev.amenities, value] };
+      return { ...prev, amenities: exists ? prev.amenities.filter((a) => a !== value) : [...prev.amenities, value] };
     });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    // validations
     if (!formData.dorm_name || !formData.class_year || !formData.rating) {
       alert("Please complete all required fields.");
+      return;
+    }
+    if (formData.rating < 1) {
+      alert("Please choose a rating.");
       return;
     }
     if (formData.amenities.length === 0) {
       alert("Please select at least one amenity.");
       return;
     }
-    const file = fileInputRef.current.files?.[0];
+    const file = fileInputRef.current?.files?.[0];
     if (!file) {
       alert("Please upload a photo.");
       return;
     }
-    const valid = ["image/jpeg","image/jpg","image/png"];
+    const valid = ["image/jpeg", "image/jpg", "image/png"];
     if (!valid.includes(file.type)) {
       alert("Invalid file type. Please upload a JPG or PNG image.");
       return;
     }
 
-    // Upload to Supabase
-    const fileName = `${Date.now()}_${file.name}`;
-    const { error: uploadError } = await supabase.storage.from("dorm-photos").upload(fileName, file);
-    if (uploadError) { console.error(uploadError); alert("Photo upload failed."); return; }
+    setSubmitting(true);
+    try {
+      // TEMP until Part B (Cloudflare R2 upload): use placeholder image
+      const uploadedPhotoUrl = "https://picsum.photos/800/600";
 
-    const { publicUrl } = supabase.storage.from("dorm-photos").getPublicUrl(fileName);
-    const submission = { ...formData, photo_url: publicUrl };
+      const res = await fetch(`${API_BASE}/submissions`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dorm_name: formData.dorm_name,
+          class_year: Number(formData.class_year),
+          rating: Number(formData.rating),
+          amenities: formData.amenities,
+          review: formData.review || "",
+          photo_url: uploadedPhotoUrl,
+        }),
+      });
 
-    const { error } = await supabase.from("submissions").insert([submission]);
-    if (error) { console.error(error); alert("Failed to submit. Please try again."); }
-    else { setUploadSuccess(true); }
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        console.error("Submit failed:", j);
+        alert("Failed to submit. Please try again.");
+        return;
+      }
+
+      setUploadSuccess(true);
+      // optional: reset form
+      setFormData({
+        dorm_name: "",
+        class_year: "",
+        rating: 0,
+        amenities: [],
+        review: "",
+        photo_url: "",
+      });
+      setPreview(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    } catch (err) {
+      console.error(err);
+      alert("Network error submitting form.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const AMENITIES = ["AC","Laundry","Elevator","Kitchen","Study Lounges","WiFi"];
+  const AMENITIES = ["AC", "Laundry", "Elevator", "Kitchen", "Study Lounges", "WiFi"];
 
   return (
     <div className="mx-auto rounded-2xl bg-white p-6 shadow">
@@ -198,7 +239,6 @@ const UploadForm = () => {
           <h2 className="mb-6 text-center text-3xl font-bold">Upload Dorm Info</h2>
 
           <form onSubmit={handleSubmit} className="space-y-8">
-
             {/* Basic info */}
             <section className="rounded-xl border border-zinc-200 p-4 shadow-sm">
               <div className="grid gap-4 md:grid-cols-2">
@@ -239,7 +279,7 @@ const UploadForm = () => {
                   onChange={(e) => setFormData({ ...formData, class_year: e.target.value })}
                   placeholder="Select Class Year"
                 >
-                  {Array.from({ length: 6}, (_, i) =>{
+                  {Array.from({ length: 6 }, (_, i) => {
                     const current = new Date().getFullYear();
                     const classYear = current + i + 1;
                     return (
@@ -248,16 +288,14 @@ const UploadForm = () => {
                       </option>
                     );
                   })}
-                  
                 </Select>
               </div>
 
               <div className="mt-4">
-                <label className="mb-2 block text-sm font-medium text-zinc-800">Rating <span className="text-red-500">*</span></label>
-                <StarRating
-                  value={formData.rating}
-                  onChange={(n) => setFormData({ ...formData, rating: n })}
-                />
+                <label className="mb-2 block text-sm font-medium text-zinc-800">
+                  Rating <span className="text-red-500">*</span>
+                </label>
+                <StarRating value={formData.rating} onChange={(n) => setFormData({ ...formData, rating: n })} />
               </div>
             </section>
 
@@ -278,7 +316,9 @@ const UploadForm = () => {
 
             {/* Photo */}
             <section className="rounded-xl border border-zinc-200 p-4 shadow-sm">
-              <label className="mb-3 block text-sm font-medium text-zinc-800">Upload Photo <span className="text-red-500">*</span></label>
+              <label className="mb-3 block text-sm font-medium text-zinc-800">
+                Upload Photo <span className="text-red-500">*</span>
+              </label>
               <FileUpload inputRef={fileInputRef} preview={preview} setPreview={setPreview} required />
             </section>
 
@@ -302,9 +342,11 @@ const UploadForm = () => {
             <div className="flex justify-end">
               <button
                 type="submit"
-                className="rounded-xl bg-[#c8102e] px-6 py-3 font-semibold text-white shadow-sm transition hover:bg-[#a00d24]"
+                disabled={submitting}
+                className={`rounded-xl px-6 py-3 font-semibold text-white shadow-sm transition
+                  ${submitting ? "bg-[#c8102e]/70 cursor-not-allowed" : "bg-[#c8102e] hover:bg-[#a00d24]"}`}
               >
-                Submit
+                {submitting ? "Submitting..." : "Submit"}
               </button>
             </div>
           </form>
