@@ -41,7 +41,7 @@ const Dorms = () => {
   };
 
   const roomTypes = {
-      'Barton Hall':['Triple'],
+      'Barton Hall':['Triple Non-Suite', 'Triple Suite'],
       'Bray Hall': ['Single', 'Double'],
       'Sharp Hall':['Single Suite'],
       'Nason Hall' :['Single', 'Double', 'Triple'],
@@ -59,7 +59,10 @@ const Dorms = () => {
 
   const modelData = {
       'Barton Hall': {
-          'Triple': [
+          'Triple Non-Suite': [
+              //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
+          ],
+          'Triple Suite': [
               //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
           ]
       },
