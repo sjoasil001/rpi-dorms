@@ -104,3 +104,88 @@ function escapeHtml(s = "") {
 
 const port = Number(process.env.PORT || 4000);
 app.listen(port, () => console.log(`Mail API listening on :${port}`));
+
+
+
+// --- simple in-memory store for codes (email -> { code, expiresAt })
+const codes = new Map();
+
+// helper: 6-digit code
+function genCode() {
+  return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+// POST /auth/send-code  { email }
+app.post("/auth/send-code", async (req, res) => {
+  try {
+    const { email } = req.body || {};
+    if (!email || typeof email !== "string") {
+      return res.status(400).json({ ok: false, error: "Email required." });
+    }
+    const rpiEmail = email.trim().toLowerCase();
+    if (!rpiEmail.endsWith("@rpi.edu")) {
+      return res.status(400).json({ ok: false, error: "Use your @rpi.edu email." });
+    }
+
+    // rate-limit per email (optional): block resend within 60s
+    const existing = codes.get(rpiEmail);
+    const now = Date.now();
+    if (existing && now < existing.nextSendAllowedAt) {
+      const wait = Math.ceil((existing.nextSendAllowedAt - now) / 1000);
+      return res.status(429).json({ ok: false, error: `Please wait ${wait}s before resending.` });
+    }
+
+    const code = genCode();
+    const expiresAt = now + 10 * 60 * 1000; // 10 minutes
+    const nextSendAllowedAt = now + 60 * 1000; // 60s cooldown
+
+    codes.set(rpiEmail, { code, expiresAt, nextSendAllowedAt });
+
+    // send email
+    await transporter.sendMail({
+      from: `"RPI Dorms Verification" <${process.env.MAIL_USERNAME}>`,
+      to: rpiEmail,
+      subject: "Your RPI Dorms verification code",
+      text:
+`Your verification code is: ${code}
+
+This code will expire in 10 minutes.
+If you did not request this, you can ignore this email.`,
+    });
+
+    return res.json({ ok: true, message: "Code sent." });
+  } catch (err) {
+    console.error("SEND-CODE ERROR:", err);
+    return res.status(500).json({ ok: false, error: "Failed to send code." });
+  }
+});
+
+// POST /auth/verify  { email, code }
+app.post("/auth/verify", (req, res) => {
+  try {
+    const { email, code } = req.body || {};
+    if (!email || !code) {
+      return res.status(400).json({ ok: false, error: "Email and code required." });
+    }
+    const rpiEmail = email.trim().toLowerCase();
+    const entry = codes.get(rpiEmail);
+    if (!entry) {
+      return res.status(400).json({ ok: false, error: "No code requested for this email." });
+    }
+    const now = Date.now();
+    if (now > entry.expiresAt) {
+      codes.delete(rpiEmail);
+      return res.status(400).json({ ok: false, error: "Code expired. Request a new one." });
+    }
+    if (String(code) !== String(entry.code)) {
+      return res.status(400).json({ ok: false, error: "Incorrect verification code." });
+    }
+
+    // success: one-time use
+    codes.delete(rpiEmail);
+    return res.json({ ok: true, message: "Verified." });
+  } catch (err) {
+    console.error("VERIFY ERROR:", err);
+    return res.status(500).json({ ok: false, error: "Verification failed." });
+  }
+});
