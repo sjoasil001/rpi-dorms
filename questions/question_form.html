@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next Page</title>
+</head>
+<body>
+
+  <h1>Type your Questions Below</h1>
+
+  <!-- Text Input -->
+  <input type="text" id="userInput" placeholder="Type here..." />
+
+  <br /><br />
+
+  <!-- Submit Button -->
+  <button onclick="handleSubmit()">Submit</button>
+
+  <p id="status"></p>
+
+  <script>
+    async function handleSubmit() {
+      const value = document.getElementById('userInput').value;
+
+      //REPLACE WITH DATABASE!!!!!!!!!
+      const apiEndpoint = "https://weneedthedatabase.com";
+
+      try {
+        const res = await fetch(apiEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: value }),
+        });
+
+        if (!res.ok) throw new Error("Failed to send.");
+
+        document.getElementById('status').textContent = "Submitted successfully!";
+      } catch (err) {
+        document.getElementById('status').textContent = "Error: " + err.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
