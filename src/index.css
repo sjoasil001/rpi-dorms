@@ -1,5 +1,20 @@
+<<<<<<< HEAD
 @import "tailwindcss";
 
 .transform-style-preserve-3d {
   transform-style: preserve-3d;
 }
+=======
+@import "tailwindcss";
+
+@layer utilities {
+  .animate-glow {
+    background-size: 200% 200%;
+    animation: glow 4s linear infinite;
+  }
+}
+
+.transform-style-preserve-3d {
+  transform-style: preserve-3d;
+}
+>>>>>>> 5a630bccd0bf2f8901c0b3b4c16f6b76d2df010b
