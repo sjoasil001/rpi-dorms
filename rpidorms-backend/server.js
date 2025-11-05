@@ -5,8 +5,19 @@ import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import { prisma } from "./db.js";
+import multer from "multer";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
 
 dotenv.config();
+console.log("R2 env present:", {
+  ENDPOINT: !!process.env.R2_ENDPOINT,
+  ACCESS: !!process.env.R2_ACCESS_KEY,
+  SECRET: !!process.env.R2_SECRET_KEY,
+  BUCKET: process.env.R2_BUCKET,
+  PUBLIC_BASE: process.env.R2_PUBLIC_BASE,
+});
+
 
 const app = express();
 
@@ -233,4 +244,65 @@ app.get("/submissions", async (_req, res) => {
 // ==================== /SUBMISSIONS ====================
 
 const port = Number(process.env.PORT || 4000);
+
+// ---------- R2 Uploads ----------
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 6 * 1024 * 1024 }, // 6MB
+});
+
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY,
+    secretAccessKey: process.env.R2_SECRET_KEY,
+  },
+});
+
+const ALLOWED = new Set(["image/jpeg", "image/jpg", "image/png"]);
+
+app.post("/upload-photo", upload.single("photo"), async (req, res) => {
+  try {
+    if (!req.file) return res.status(400).json({ ok: false, error: "no_file" });
+
+    const { mimetype, originalname, buffer } = req.file;
+    if (!ALLOWED.has(mimetype)) {
+      return res.status(400).json({ ok: false, error: "invalid_type" });
+    }
+
+    const safeName = originalname.replace(/[^\w.\-]+/g, "_");
+    const key = `${Date.now()}-${safeName}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: mimetype,
+      CacheControl: "public, max-age=31536000, immutable",
+    }));
+
+    const publicUrl = `${process.env.R2_PUBLIC_BASE}/${key}`;
+    return res.json({ ok: true, url: publicUrl, key });
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    return res.status(500).json({ ok: false, error: "upload_failed" });
+  }
+});
+
+// (catches Multer and other route errors)
+app.use((err, req, res, next) => {
+  // Multer-specific
+  if (err && err.name === 'MulterError') {
+    console.error("MULTER ERROR:", err.code, err.message);
+    return res.status(400).json({ ok: false, error: `multer_${err.code}` });
+  }
+  if (err) {
+    console.error("UNCAUGHT ERROR:", err.name, err.message, err.stack);
+    return res.status(500).json({ ok: false, error: 'server_error' });
+  }
+  next();
+});
+
+
 app.listen(port, () => console.log(`API listening on :${port}`));

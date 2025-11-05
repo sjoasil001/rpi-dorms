@@ -1,4 +1,6 @@
 import React, { useRef, useState } from "react";
+import confetti from "canvas-confetti";
+
 
 const API_BASE = import.meta.env.VITE_API_BASE;
 
@@ -153,77 +155,101 @@ const UploadForm = () => {
     });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async (e) => {
+  e.preventDefault();
 
-    // validations
-    if (!formData.dorm_name || !formData.class_year || !formData.rating) {
-      alert("Please complete all required fields.");
-      return;
-    }
-    if (formData.rating < 1) {
-      alert("Please choose a rating.");
-      return;
-    }
-    if (formData.amenities.length === 0) {
-      alert("Please select at least one amenity.");
-      return;
-    }
-    const file = fileInputRef.current?.files?.[0];
-    if (!file) {
-      alert("Please upload a photo.");
-      return;
-    }
-    const valid = ["image/jpeg", "image/jpg", "image/png"];
-    if (!valid.includes(file.type)) {
-      alert("Invalid file type. Please upload a JPG or PNG image.");
-      return;
-    }
+  // validations
+  if (!formData.dorm_name || !formData.class_year || !formData.rating) {
+    alert("Please complete all required fields.");
+    return;
+  }
+  if (formData.rating < 1) {
+    alert("Please choose a rating.");
+    return;
+  }
+  if (formData.amenities.length === 0) {
+    alert("Please select at least one amenity.");
+    return;
+  }
+  const file = fileInputRef.current?.files?.[0];
+  if (!file) {
+    alert("Please upload a photo.");
+    return;
+  }
+  const valid = ["image/jpeg", "image/jpg", "image/png"];
+  if (!valid.includes(file.type)) {
+    alert("Invalid file type. Please upload a JPG or PNG image.");
+    return;
+  }
 
-    setSubmitting(true);
-    try {
-      // TEMP until Part B (Cloudflare R2 upload): use placeholder image
-      const uploadedPhotoUrl = "https://picsum.photos/800/600";
+  setSubmitting(true);
+  try {
+    // --- Step 1: upload the photo to the backend -> R2
+    const fd = new FormData();
+    fd.append("photo", file);
 
-      const res = await fetch(`${API_BASE}/submissions`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          dorm_name: formData.dorm_name,
-          class_year: Number(formData.class_year),
-          rating: Number(formData.rating),
-          amenities: formData.amenities,
-          review: formData.review || "",
-          photo_url: uploadedPhotoUrl,
-        }),
-      });
-
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        console.error("Submit failed:", j);
-        alert("Failed to submit. Please try again.");
-        return;
-      }
-
-      setUploadSuccess(true);
-      // optional: reset form
-      setFormData({
-        dorm_name: "",
-        class_year: "",
-        rating: 0,
-        amenities: [],
-        review: "",
-        photo_url: "",
-      });
-      setPreview(null);
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } catch (err) {
-      console.error(err);
-      alert("Network error submitting form.");
-    } finally {
+    const upRes = await fetch(`${API_BASE}/upload-photo`, {
+      method: "POST",
+      body: fd, // don't set Content-Type; browser will set multipart boundary
+    });
+    if (!upRes.ok) {
+      const j = await upRes.json().catch(() => ({}));
+      console.error("Upload failed:", j);
+      alert("Photo upload failed.");
       setSubmitting(false);
+      return;
     }
-  };
+    const { url: uploadedPhotoUrl } = await upRes.json();
+
+    // --- Step 2: save the submission with the uploaded photo URL
+    const res = await fetch(`${API_BASE}/submissions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        dorm_name: formData.dorm_name,
+        class_year: Number(formData.class_year),
+        rating: Number(formData.rating),
+        amenities: formData.amenities,
+        review: formData.review || "",
+        photo_url: uploadedPhotoUrl,
+      }),
+    });
+
+    if (!res.ok) {
+      const j = await res.json().catch(() => ({}));
+      console.error("Submit failed:", j);
+      alert("Failed to submit. Please try again.");
+      setSubmitting(false);
+      return;
+    }
+
+    // success
+    setUploadSuccess(true);
+    // 🎉 Trigger confetti animation
+    confetti({
+      particleCount: 150,
+      spread: 70,
+      origin: { y: 0.6 },
+    });
+
+    setFormData({
+      dorm_name: "",
+      class_year: "",
+      rating: 0,
+      amenities: [],
+      review: "",
+      photo_url: "",
+    });
+    setPreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  } catch (err) {
+    console.error(err);
+    alert("Network error submitting form.");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   const AMENITIES = ["AC", "Laundry", "Elevator", "Kitchen", "Study Lounges", "WiFi"];
 
