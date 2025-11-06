@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import React, { useRef, useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
 
@@ -208,7 +207,6 @@ if (error) {
 };
 
 export default UploadForm;
-=======
 import React, { useRef, useState } from "react";
 
 const API_BASE = import.meta.env.VITE_API_BASE;
@@ -568,4 +566,3 @@ const UploadForm = () => {
 };
 
 export default UploadForm;
->>>>>>> 5a630bccd0bf2f8901c0b3b4c16f6b76d2df010b

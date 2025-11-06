@@ -5,6 +5,10 @@ import rateLimit from "express-rate-limit";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
 import { prisma } from "./db.js";
+import multer from "multer";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+
+
 
 dotenv.config();
 
@@ -233,4 +237,80 @@ app.get("/submissions", async (_req, res) => {
 // ==================== /SUBMISSIONS ====================
 
 const port = Number(process.env.PORT || 4000);
+
+//start code here//
+
+// --- Upload middleware setup ---
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 6 * 1024 * 1024 }, // 6 MB max
+});
+
+// --- Helper: sanitize filenames ---
+function sanitizeFilename(name) {
+  return name.replace(/[^a-zA-Z0-9.-]/g, "");
+}
+
+// --- Verify required env vars ---
+const requiredEnv = [
+  "R2_ENDPOINT",
+  "R2_ACCESS_KEY",
+  "R2_SECRET_KEY",
+  "R2_BUCKET",
+  "R2_PUBLIC_BASE",
+];
+for (const key of requiredEnv) {
+  if (!process.env[key]) {
+    console.error(Missing environment variable: ${key});
+    process.exit(1);
+  }
+}
+
+// --- Cloudflare R2 S3-compatible client ---
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY,
+    secretAccessKey: process.env.R2_SECRET_KEY,
+  },
+});
+
+// --- Route: POST /upload-photo ---
+app.post("/upload-photo", upload.single("photo"), async (req, res) => {
+  try {
+    // Validate file
+    if (!req.file) {
+      return res.status(400).json({ ok: false, error: "no_file" });
+    }
+
+    const { originalname, mimetype, buffer } = req.file;
+    const allowed = ["image/jpeg", "image/jpg", "image/png"];
+    if (!allowed.includes(mimetype)) {
+      return res.status(400).json({ ok: false, error: "invalid_type" });
+    }
+
+    // Generate object key
+    const safeName = sanitizeFilename(originalname);
+    const key = ${Date.now()}-${safeName};
+
+    // Upload to Cloudflare R2
+    const cmd = new PutObjectCommand({
+      Bucket: process.env.R2_BUCKET,
+      Key: key,
+      Body: buffer,
+      ContentType: mimetype,
+      CacheControl: "public, max-age=31536000, immutable",
+    });
+
+    await r2.send(cmd);
+
+    const publicUrl = ${process.env.R2_PUBLIC_BASE}/${key};
+
+    return res.json({ ok: true, url: publicUrl, key });
+  } catch (err) {
+    console.error("UPLOAD ERROR:", err);
+    return res.status(500).json({ ok: false, error: "upload_failed" });
+  }
+});
 app.listen(port, () => console.log(`API listening on :${port}`));
