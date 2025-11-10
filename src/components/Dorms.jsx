@@ -34,7 +34,7 @@ const Dorms = () => {
   };
   
   const dormData = {
-      Freshman: ['Barton Hall', 'Bray Hall', 'Sharp Hall','Nason Hall'],
+      Freshman: ['Barton Hall', 'Bray Hall', 'Sharp Hall','Nason Hall','Burdett Avenue Residence Hall','Cary Hall','Crocket Hall','Davison Hall','Nugent Hall','Hall Hall','Warren Hall'],
       Sophomore: ['North Hall', 'E-Complex', 'Blitman','Quadrangle (Quad)', 'Colvin and Albright (RAHP A)', 'Beman and Brinsmade (RAHP B)'],
       Junior: ['City Station', 'Polytechnic', 'Bryckwyck Apartments', 'Stacwyck Apartments'],
       Senior: ['City Station', 'Polytechnic','Bryckwyck Apartments', 'Stacwyck Apartments']
@@ -45,14 +45,15 @@ const Dorms = () => {
       'Bray Hall': ['Single', 'Double'],
       'Sharp Hall':['Single Suite'],
       'Nason Hall' :['Single', 'Double', 'Triple'],
+      'Burdett Avenue Residence Hall': ['Triple'],
       'North Hall': ['Single', 'Double'],
       'E-Complex': ['Single', 'Double'],
       'Blitman':['Apartment'],
       'Quadrangle (Quad)':['Single','Double','Quadruple'],
       'Colvin and Albright (RAHP A)':['Apartment'],
       'Beman and Brinsmade (RAHP B)':['Apartment'],
-      'City Station':['Apartment'],
-      'Polytechnic':['Apartment'],
+      'City Station Apartments':['Apartment'],
+      'Polytechnic Apartments':['Apartment'],
       'Bryckwyck Apartments':['Single Apartment','Double Apartment'],
       'Stacwyck Apartments':['Apartments']
   };
@@ -60,7 +61,7 @@ const Dorms = () => {
   const modelData = {
       'Barton Hall': {
           'Triple Non-Suite': [
-              //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
+              //{name: 'Triple Non-Suite', videoUrl: '/Finalized_Models/Barton_.mp4'}
           ],
           'Triple Suite': [
               //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
@@ -77,6 +78,11 @@ const Dorms = () => {
       'Sharp Hall': {
           'Single Suite': [
               {name: 'Sharp Hall', videoUrl: '/Finalized_Models/Sharp_Hall.mp4'}
+          ]
+      },
+      'Burdett Avenue Residence Hall': {
+          'Triple': [
+              //{name: 'Sharp Hall', videoUrl: '/Finalized_Models/Sharp_Hall.mp4'}
           ]
       },
       'Nason Hall': {
