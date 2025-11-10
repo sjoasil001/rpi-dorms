@@ -1,42 +1,28 @@
 import React, { useRef } from 'react';
-import Footer from './Footer';
-
-const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000';
+import emailjs from 'emailjs-com';
+import Footer from './Footer'; 
 
 const ContactUs = () => {
   const formRef = useRef();
 
-  const sendEmail = async (e) => {
+  const sendEmail = (e) => {
     e.preventDefault();
 
-    const form = formRef.current;
-    const payload = {
-      // map your current field names to backend expected keys
-      from_name: form.name.value,
-      reply_to: form.email.value,
-      message: form.message.value,
-      // optional: simple honeypot; backend can ignore if not used
-      phone: form.phone?.value || ''
-    };
-
-    try {
-      const res = await fetch(`${API_BASE}/api/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-
-      const data = await res.json().catch(() => ({}));
-      if (res.ok && data.ok) {
+    emailjs.sendForm(
+      'service_up09twy',
+      'template_oslh1ti',
+      formRef.current,
+      '6-PANXv2r9cZvSEZA'
+    ).then(
+      () => {
         alert('Message sent successfully!');
-        form.reset();
-      } else {
-        throw new Error(data.error || 'Failed to send message. Please try again.');
+        formRef.current.reset();
+      },
+      (error) => {
+        alert('Failed to send message. Please try again.');
+        console.error(error.text);
       }
-    } catch (error) {
-      console.error('Contact form error:', error);
-      alert('Failed to send message. Please try again.');
-    }
+    );
   };
 
   return (
@@ -85,9 +71,6 @@ const ContactUs = () => {
             onSubmit={sendEmail}
             className="bg-black rounded-2xl p-8 space-y-6 w-full"
           >
-            {/* optional honeypot; keep hidden if you add it to backend */}
-            <input type="text" name="phone" className="hidden" tabIndex={-1} autoComplete="off" />
-
             <input
               name="name"
               placeholder="Name"
