@@ -55,3 +55,29 @@ Tech Stack
 ```bash
 git clone https://github.com/sjoasil001/rpidorms-frontend.git
 cd rpidorms-frontend
+
+Install Dependencies
+
+Frontend
+cd rpidorms-frontend
+npm install
+
+Backend
+cd rpidorms-backend
+npm install
+
+Run the Backend
+
+cd rpidorms-backend
+npm run dev
+
+If successful, you should see something like:
+Server running on http://localhost:4000
+Connected to Cloudflare R2 successfully
+
+Run the Frontend
+cd rpidorms-frontend
+npm run dev
+
+
+
