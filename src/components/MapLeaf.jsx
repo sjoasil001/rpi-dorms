@@ -22,6 +22,38 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
+const dormIcon = L.divIcon({
+  className: '', // no default class so we fully control style
+  html: `
+    <div style="
+      width: 14px;
+      height: 14px;
+      background: #C8102E;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
+    "></div>
+  `,
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+});
+
+const dormIconActive = L.divIcon({
+  className: '',
+  html: `
+    <div style="
+      width: 18px;
+      height: 18px;
+      background: #C8102E;
+      border-radius: 999px;
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 6px rgba(0,0,0,0.5);
+    "></div>
+  `,
+  iconSize: [18, 18],
+  iconAnchor: [9, 9],
+});
+
 
 const DORMS = [
     
@@ -227,18 +259,15 @@ const DORMS = [
               'Tiles &copy; Esri — Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
           };
         case 'hybrid':
-          
           return {
             url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            attribution:
-              'Tiles &copy; Esri — World Imagery (Hybrid-like)',
+            attribution: 'Tiles &copy; Esri — World Imagery (Hybrid-like)',
           };
         case 'standard':
         default:
           return {
             url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            attribution:
-              '&copy; OpenStreetMap contributors',
+            attribution: '&copy; OpenStreetMap contributors',
           };
       }
     };
@@ -350,28 +379,35 @@ const DORMS = [
                 scrollWheelZoom={true}
                 style={{ width: '100%', height: '100%' }}
               >
-                <TileLayer url={tileLayer.url} attribution={tileLayer.attribution} />
+                <TileLayer
+                  url={tileLayer.url}
+                  attribution={tileLayer.attribution}
+                />
                 <RecenterMap center={selectedDorm?.position || defaultCenter} />
   
-                {filteredDorms.map((dorm) => (
-                  <Marker
-                    key={dorm.id}
-                    position={dorm.position}
-                    eventHandlers={{
-                      click: () => setSelectedDorm(dorm),
-                    }}
-                  >
-                    <Popup>
-                      <div className="text-xs">
-                        <div className="font-semibold mb-1">{dorm.name}</div>
-                        <div>{dorm.style}</div>
-                        <div className="text-[0.7rem] text-gray-600">
-                          {dorm.yearLevels.join(', ')}
+                {filteredDorms.map((dorm) => {
+                  const isActive = selectedDorm?.id === dorm.id;
+                  return (
+                    <Marker
+                      key={dorm.id}
+                      position={dorm.position}
+                      icon={isActive ? dormIconActive : dormIcon}
+                      eventHandlers={{
+                        click: () => setSelectedDorm(dorm),
+                      }}
+                    >
+                      <Popup>
+                        <div className="text-xs">
+                          <div className="font-semibold mb-1">{dorm.name}</div>
+                          <div>{dorm.style}</div>
+                          <div className="text-[0.7rem] text-gray-600">
+                            {dorm.yearLevels.join(', ')}
+                          </div>
                         </div>
-                      </div>
-                    </Popup>
-                  </Marker>
-                ))}
+                      </Popup>
+                    </Marker>
+                  );
+                })}
               </MapContainer>
   
               {/* Legend */}
