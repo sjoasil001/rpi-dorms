@@ -8,6 +8,7 @@ import Insights from './components/Insights';
 import Dorms from './components/Dorms';
 import UploadPage from './components/UploadPage'; 
 import Footer from './components/Footer';
+import Map from './components/Map';
 
 function Home() {
   return (
@@ -29,6 +30,7 @@ function App() {
         <Route path="/insights" element={<Insights />} />
         <Route path="/dorms" element={<Dorms />} />
         <Route path="/upload" element={<UploadPage />} />
+        <Route path ="/map" element={<Map />} /> 
       </Routes>
     </>
   );
