@@ -261,7 +261,7 @@ const requiredEnv = [
 ];
 for (const key of requiredEnv) {
   if (!process.env[key]) {
-    console.error(Missing environment variable: ${key});
+    console.error(`Missing environment variable: ${key}`);
     process.exit(1);
   }
 }
@@ -292,7 +292,7 @@ app.post("/upload-photo", upload.single("photo"), async (req, res) => {
 
     // Generate object key
     const safeName = sanitizeFilename(originalname);
-    const key = ${Date.now()}-${safeName};
+    const key = `${Date.now()}-${safeName}`;
 
     // Upload to Cloudflare R2
     const cmd = new PutObjectCommand({
@@ -305,7 +305,7 @@ app.post("/upload-photo", upload.single("photo"), async (req, res) => {
 
     await r2.send(cmd);
 
-    const publicUrl = ${process.env.R2_PUBLIC_BASE}/${key};
+    const publicUrl = `${process.env.R2_PUBLIC_BASE}/${key}`;
 
     return res.json({ ok: true, url: publicUrl, key });
   } catch (err) {
@@ -313,4 +313,5 @@ app.post("/upload-photo", upload.single("photo"), async (req, res) => {
     return res.status(500).json({ ok: false, error: "upload_failed" });
   }
 });
+
 app.listen(port, () => console.log(`API listening on :${port}`));
