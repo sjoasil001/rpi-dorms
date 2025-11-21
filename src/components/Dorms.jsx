@@ -61,10 +61,10 @@ const Dorms = () => {
   const modelData = {
       'Barton Hall': {
           'Triple Non-Suite': [
-              //{name: 'Triple Non-Suite', videoUrl: '/Finalized_Models/Barton_.mp4'}
+              {name: 'Triple Non-Suite', videoUrl: '/Finalized_Models/Barton_Hall_Regular.mp4'}
           ],
           'Triple Suite': [
-              //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
+              {name: 'Triple Suite', videoUrl: '/Finalized_Models/Barton_Hall_Suite.mp4'}
           ]
       },
       'Bray Hall': {
