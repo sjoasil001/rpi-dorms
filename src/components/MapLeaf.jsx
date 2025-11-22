@@ -83,7 +83,7 @@ const DORMS = [
     {
       id: 'cary',
       name: 'Cary Hall',
-      position: { lat: 42.72945, lng: -73.67439 },
+      position: { lat: 42.72880, lng: -73.67445 },
       yearLevels: ['Underclassmen'],
       style: 'Traditional',
     },
@@ -190,7 +190,7 @@ const DORMS = [
     {
       id: 'city_station_w',
       name: 'City Station West',
-      position: { lat: 42.7343, lng: -73.6790 },
+      position: { lat: 42.72786, lng: -73.68743 },
       yearLevels: ['Upperclassmen'],
       style: 'Apartment',
     },
@@ -474,7 +474,4 @@ const DORMS = [
           </div>
         </div>
       </div>
-    );
-  };
-  
-  export default MapLeaf;
+   
