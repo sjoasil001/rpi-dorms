@@ -474,4 +474,7 @@ const DORMS = [
           </div>
         </div>
       </div>
-   
+    );
+  };
+  
+  export default MapLeaf;
