@@ -26,7 +26,9 @@ const NextPage = () => {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center bg-gray-50 px-6">
       <div className="bg-white p-8 rounded-xl shadow-md text-center w-full max-w-lg">
-        <h1 className="text-3xl font-extrabold mb-4 text-gray-800">Ask a Question</h1>
+        <h1 className="text-3xl font-extrabold mb-4" style={{color: '#c8102e'}}>
+          Ask a Question
+        </h1>
 
         <input
           type="text"
@@ -38,7 +40,8 @@ const NextPage = () => {
 
         <button
           onClick={handleSubmit}
-          className="bg-black hover:bg-gray-800 text-white font-semibold py-2 px-4 rounded transition duration-200 w-full"
+          className="text-white font-semibold py-2 px-4 rounded transition duration-200 w-full"
+          style={{ backgroundColor: '#c8102e' }}
         >
           Submit
         </button>
