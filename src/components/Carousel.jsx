@@ -44,7 +44,7 @@ export default function Carousel() {
   
 
   return (
-    <div className="relative w-full h-[400px] flex items-center justify-center overflow-visible perspective-[1000px]">
+    <div className="relative w-full h-[400px] flex items-center justify-center overflow-visible perspective-[1000px] mb-24 md:mb-32">
       {/* Decorative lines */}
       <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-16 h-1 bg-red-600 rounded-full" />
       <div className="absolute left-[05%] top-1/2 -translate-y-1/2 w-1 h-16 bg-red-600 rounded-full" />
