@@ -22,3 +22,10 @@ model Submission {
   @@index([dorm_name])
   @@index([class_year])
 }
+
+model FormResponse {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  text      String   @db.Text
+}
+
