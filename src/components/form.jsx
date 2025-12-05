@@ -6,7 +6,8 @@ const NextPage = () => {
 
   const handleSubmit = async () => {
 
-    const apiEndpoint = 'http://localhost:4000';
+    const apiEndpoint = 'http://localhost:4000/form-entry';
+
 
     try {
       const res = await fetch(apiEndpoint, {
