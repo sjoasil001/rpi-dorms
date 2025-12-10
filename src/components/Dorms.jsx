@@ -159,6 +159,11 @@ const Dorms = () => {
               //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
           ]
       },
+      'Stacwyck Apartments': {
+          'Apartment': [
+              {name: 'Stackwyck Apartments', videoUrl: '/Finalized_Models/Stackwyck.mp4'}
+          ]
+      },
   };
 
   const handleSend = () => {
