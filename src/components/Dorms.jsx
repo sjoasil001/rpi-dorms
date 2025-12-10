@@ -55,7 +55,7 @@ const Dorms = () => {
       'City Station Apartments':['Apartment'],
       'Polytechnic Apartments':['Apartment'],
       'Bryckwyck Apartments':['Single Apartment','Double Apartment'],
-      'Stacwyck Apartments':['Apartments']
+      'Stacwyck Apartments':['Apartment']
   };
 
   const modelData = {
@@ -148,7 +148,7 @@ const Dorms = () => {
       },
       'Polytechnic Apartments': {
           'Apartment': [
-              //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
+              {name: 'Polytechnic Apartments', videoUrl: '/Finalized_Models/Polytechnic.mp4'}
           ]
       },
       'Bryckwyck Apartments': {
@@ -156,11 +156,6 @@ const Dorms = () => {
               {name: 'Bryckwyck Single Apt', videoUrl: '/Finalized_Models/Bryckwyck_Single.mp4'}
           ],
           'Double Apartment':[
-              //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
-          ]
-      },
-      'Stacwyck Apartments': {
-          'Apartment': [
               //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
           ]
       },
