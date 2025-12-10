@@ -34,20 +34,20 @@ const Dorms = () => {
   };
   
   const dormData = {
-      Freshman: ['Barton Hall', 'Bray Hall', 'Sharp Hall','Nason Hall','Burdett Avenue Residence Hall','Cary Hall','Crocket Hall','Davison Hall','Nugent Hall','Hall Hall','Warren Hall'],
+      Freshman: ['Barton Hall', 'Bray Hall (Unavailiable)', 'Sharp Hall','Nason Hall','Burdett Avenue Residence Hall (Unavailiable)','Cary Hall (Unavailiable)','Crocket Hall (Unavailiable)','Davison Hall (Unavailiable)','Nugent Hall (Unavailiable)','Hall Hall (Unavailiable)','Warren Hall (Unavailiable)'],
       Sophomore: ['North Hall', 'E-Complex', 'Blitman','Quadrangle (Quad)', 'Colvin and Albright (RAHP A)', 'Beman and Brinsmade (RAHP B)'],
-      Junior: ['City Station', 'Polytechnic', 'Bryckwyck Apartments', 'Stacwyck Apartments'],
-      Senior: ['City Station', 'Polytechnic','Bryckwyck Apartments', 'Stacwyck Apartments']
+      Junior: ['City Station Apartments', 'Polytechnic Apartments', 'Bryckwyck Apartments', 'Stacwyck Apartments'],
+      Senior: ['City Station Apartments', 'Polytechnic Apartments','Bryckwyck Apartments', 'Stacwyck Apartments']
   };
 
   const roomTypes = {
       'Barton Hall':['Triple Non-Suite', 'Triple Suite'],
-      'Bray Hall': ['Single', 'Double'],
+      'Bray Hall (Unavailiable)': ['Single (COMING SOON)', 'Double (COMING SOON)'],
       'Sharp Hall':['Single Suite'],
       'Nason Hall' :['Single', 'Double', 'Triple'],
-      'Burdett Avenue Residence Hall': ['Triple'],
+      'Burdett Avenue Residence Hall (Unavailiable)': ['Triple (Under Construction)'],
       'North Hall': ['Single', 'Double'],
-      'E-Complex': ['Single', 'Double'],
+      'E-Complex': ['Single', 'Double (COMING SOON)'],
       'Blitman':['Apartment'],
       'Quadrangle (Quad)':['Single','Double','Quadruple'],
       'Colvin and Albright (RAHP A)':['Apartment'],
@@ -67,7 +67,7 @@ const Dorms = () => {
               {name: 'Triple Suite', videoUrl: '/Finalized_Models/Barton_Hall_Suite.mp4'}
           ]
       },
-      'Bray Hall': {
+      'Bray Hall (Unavailiable)': {
           'Single': [
               //{name: 'North Hall Single1', videoUrl: '/Finalized_Models/North_Hall_Single.mp4'}
           ],
@@ -80,7 +80,7 @@ const Dorms = () => {
               {name: 'Sharp Hall', videoUrl: '/Finalized_Models/Sharp_Hall.mp4'}
           ]
       },
-      'Burdett Avenue Residence Hall': {
+      'Burdett Avenue Residence Hall (Unavailiable)': {
           'Triple': [
               //{name: 'Sharp Hall', videoUrl: '/Finalized_Models/Sharp_Hall.mp4'}
           ]
@@ -141,12 +141,12 @@ const Dorms = () => {
               {name: 'RAHP B ', videoUrl: '/Finalized_Models/Rhaps_B.mp4'}
           ]
       },
-      'City Station': {
+      'City Station Apartments': {
           'Apartment': [
-              //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
+              {name: 'City Station Apartments', videoUrl: '/Finalized_Models/City_Station.mp4'}
           ]
       },
-      'Polytechnic': {
+      'Polytechnic Apartments': {
           'Apartment': [
               //{name: 'Blitman Apt1', videoUrl: '/Finalized_Models/Blitman.mp4'}
           ]
