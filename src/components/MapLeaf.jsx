@@ -301,7 +301,7 @@ const DORMS = [
   
               {/* Class year filters */}
               <div className="flex flex-wrap gap-2 mb-3 text-xs font-medium">
-                {['All', 'Freshman', 'Sophomore', 'Junior/Senior/Co-term'].map(
+                {['All', 'Underclassmen', 'Upperclassmen', 'The Arch'].map(
                   (year) => (
                     <button
                       key={year}
