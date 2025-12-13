@@ -181,7 +181,7 @@ const DORMS = [
       name: 'Quadrangle (Quad)',
       position: { lat: 42.73055, lng: -73.67746 },
       yearLevels: ['Underclassmen'],
-      style: 'Apartment',
+      style: 'Traditional',
     },
   
     
@@ -203,7 +203,7 @@ const DORMS = [
       },
     {
       id: 'poly_apts',
-      name: 'Polytechnic Apartments',
+      name: 'Polytechnic Apartment',
       position: { lat: 42.72211, lng: -73.67950 },
       yearLevels: ['Upperclassmen'],
       style: 'Apartment',
