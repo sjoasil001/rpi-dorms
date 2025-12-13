@@ -300,24 +300,26 @@ const DORMS = [
               <h2 className="text-lg font-semibold mb-2">Dorms</h2>
   
               {/* Class year filters */}
-              <div className="flex flex-wrap gap-2 mb-3 text-xs font-medium">
-                {['All', 'Underclassmen', 'Upperclassmen', 'The Arch'].map(
-                  (year) => (
-                    <button
-                      key={year}
-                      onClick={() => setClassFilter(year)}
-                      className={
-                        'px-3 py-1 rounded-full border transition ' +
-                        (classFilter === year
-                          ? 'bg-[#c8102e] text-white border-[#c8102e]'
-                          : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50')
-                      }
-                    >
-                      {year}
-                    </button>
-                  )
-                )}
-              </div>
+             <div className="flex flex-wrap gap-2 mb-3 text-xs font-medium">
+              {['All', 'Underclassmen', 'Upperclassmen', 'The Arch'].map((year) => (
+                <button
+                  key={year}
+                  onClick={() => setClassFilter(year)}
+                  title={year}
+                  className={
+                    'px-3 py-1 rounded-full border transition-all duration-200 ease-out ' +
+                    'hover:scale-[1.06] hover:bg-[#c8102e]/15 hover:border-[#c8102e]/40 hover:shadow-sm ' +
+                    'active:scale-[0.97] ' +
+                    (classFilter === year
+                      ? 'bg-[#c8102e] text-white border-[#c8102e]'
+                      : 'bg-white text-gray-700 border-gray-300')
+                  }
+                >
+                  {year}
+                </button>
+              ))}
+            </div>
+
   
               {/* Search bar */}
               <input
